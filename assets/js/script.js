@@ -200,6 +200,20 @@ document.onkeydown = function (e) {
 };
 
 //<!--Start of Tawk.to Script-->
+var Tawk_API = Tawk_API || {};
+var Tawk_LoadStart = new Date();
+
+Tawk_API.customStyle = {
+    visibility : {
+        desktop : {
+            position : 'bl'
+        },
+        mobile : {
+            position : 'bl'
+        }
+    }
+};
+
 
 var Tawk_API=Tawk_API||{}, Tawk_LoadStart=new Date();
 (function(){
