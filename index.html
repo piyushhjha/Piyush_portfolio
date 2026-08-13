@@ -12,10 +12,6 @@
   <!-- Custom CSS -->
   <link rel="stylesheet" href="./assets/css/style.css">
 
-  <!-- Javascript-->
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
-
-
   <!-- Font Awesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
     integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w=="
@@ -596,7 +592,7 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
               <i class='fas fa-user'></i>
             </div>
             <div class="field">
-              <input type="text" name="email" placeholder="Email" required>
+              <input type="email" name="email" placeholder="Email" required>
               <i class='fas fa-envelope'></i>
             </div>
             <div class="field">
@@ -685,43 +681,50 @@ href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
   <!-- scroll reveal anim -->
   <script src="https://unpkg.com/scrollreveal"></script>
 
-  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-
   <!-- ==== ALL MAJOR JAVASCRIPT CDNS ENDS ==== -->
 
   <script src="./assets/js/script.js"></script>
 
-  <script type="text/javascript">
-    (function () {
-      emailjs.init("44PHr3JZ1tGhXe5Mx"); // Replace 'YOUR_USER_ID' with your actual user ID from EmailJS
-    })();
-  </script>
-
-  <!-- Form submission script-->
+  <!-- Form submission script (Web3Forms) -->
   <script type="text/javascript">
   document.getElementById('contact-form').addEventListener('submit', function(event) {
     event.preventDefault();
 
-    // Collect form data
     const form = event.target;
+    const submitBtn = form.querySelector('button[type="submit"]');
     const formData = new FormData(form);
 
-    // Create email parameters
-    const emailParams = {
-      name: formData.get('name'),
-      email: formData.get('email'),
-      phone: formData.get('phone'),
-      message: formData.get('message')
-    };
+    // Web3Forms required fields
+    formData.append('access_key', 'd8e58332-332c-47df-9c3e-8b3ca7f73e51');
+    formData.append('subject', 'New message from portfolio contact form');
+    formData.append('from_name', formData.get('name'));
 
-    // Send the email
-    emailjs.send('service_ultd1tl', 'template_zeu7ahq', emailParams)
-      .then(function(response) {
-        console.log('SUCCESS!', response.status, response.text);
-        alert('Email sent successfully!');
-      }, function(error) {
+    const originalBtnHTML = submitBtn.innerHTML;
+    submitBtn.disabled = true;
+    submitBtn.innerHTML = 'Sending...';
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      body: formData
+    })
+      .then(function(response) { return response.json(); })
+      .then(function(result) {
+        if (result.success) {
+          console.log('SUCCESS!', result);
+          alert('Message sent successfully!');
+          form.reset();
+        } else {
+          console.log('FAILED...', result);
+          alert('Failed to send message: ' + (result.message || 'Unknown error. Check console for details.'));
+        }
+      })
+      .catch(function(error) {
         console.log('FAILED...', error);
-        alert('Failed to send email.');
+        alert('Failed to send message. Please check your connection and try again.');
+      })
+      .finally(function() {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnHTML;
       });
   });
 </script>
